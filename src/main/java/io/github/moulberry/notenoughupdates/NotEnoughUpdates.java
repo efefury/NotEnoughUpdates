@@ -64,6 +64,7 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.FuelBar;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightConstants;
 import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -111,6 +112,7 @@ public class NotEnoughUpdates {
 	public static final String PRE_VERSION = "0.0";
 	public static final int VERSION_ID = 20100;
 	public static final int PRE_VERSION_ID = 0;
+
 	/**
 	 * Registers the biomes for the crystal hollows here so optifine knows they exists
 	 */

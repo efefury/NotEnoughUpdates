@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.lily.LilyWeight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Blocks;
@@ -482,6 +483,7 @@ public class ProfileViewer {
 		private long lastStatusInfoState = 0;
 		private long lastGuildInfoState = 0;
 		private long lastBingoInfoState = 0;
+		public LilyWeight lilyWeight = null;
 
 		public Profile(String uuid) {
 			this.uuid = uuid;
@@ -825,6 +827,16 @@ public class ProfileViewer {
 			}
 
 			return null;
+		}
+
+		public LilyWeight getLilyWeight(String profileId) {
+			if (stats.get(profileId) != null) return lilyWeight;
+			JsonObject profileInfo = getProfileInformation(profileId);
+			if (profileInfo == null) {
+				return null;
+			}
+			this.lilyWeight = new LilyWeight(profileInfo);
+			return lilyWeight;
 		}
 
 		public void resetCache() {

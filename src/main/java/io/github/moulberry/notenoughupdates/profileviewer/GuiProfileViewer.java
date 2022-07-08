@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryPage;
 import io.github.moulberry.notenoughupdates.profileviewer.trophy.TrophyFishingPage;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.lily.LilyWeight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -63,6 +64,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Matrix4f;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -279,6 +281,14 @@ public class GuiProfileViewer extends GuiScreen {
 	private boolean loadingProfile = false;
 	private double lastBgBlurFactor = -1;
 	private boolean showBingoPage;
+
+	float totalSkillLVL = -1;
+	float totalTrueSkillLVL = -1;
+	float totalSlayerLVL = -1;
+	float avgSkillLVL = -1;
+	float avgTrueSkillLVL = -1;
+	float avgSlayerLVL = -1;
+	float totalSlayerXP = -1;
 
 	public GuiProfileViewer(ProfileViewer.Profile profile) {
 		GuiProfileViewer.profile = profile;
@@ -1220,8 +1230,6 @@ public class GuiProfileViewer extends GuiScreen {
 		Utils.playPressSound();
 	}
 
-
-
 	private void mouseReleasedPets(int mouseX, int mouseY, int mouseButton) {
 		if (mouseY > guiTop + 6 && mouseY < guiTop + 22) {
 			if (mouseX > guiLeft + 100 - 15 - 12 && mouseX < guiLeft + 100 - 20) {
@@ -1287,7 +1295,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 	}
 
-
 	private void calculateFloorLevelXP() {
 		JsonObject leveling = Constants.LEVELING;
 		if (leveling == null) return;
@@ -1347,7 +1354,9 @@ public class GuiProfileViewer extends GuiScreen {
 					profileInfo,
 					"dungeons.dungeon_types.catacombs.experience"
 				), 0);
-				levelObjCata = ProfileViewer.getLevel(Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray(),
+				levelObjCata = ProfileViewer.getLevel(Utils
+						.getElementOrDefault(leveling, "catacombs", new JsonArray())
+						.getAsJsonArray(),
 					cataXp, 99, false
 				);
 				levelObjCata.totalXp = cataXp;
@@ -2404,8 +2413,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 	}
 
-
-
 	public int countItemsInInventory(
 		String internalname,
 		JsonObject inventoryInfo,
@@ -2658,7 +2665,10 @@ public class GuiProfileViewer extends GuiScreen {
 						int magicalPower = PlayerStats.getMagicalPower(inventoryInfo);
 						tooltipToDisplay.add(magicalPower == -1
 							? magicalPowerString.append(EnumChatFormatting.RED).append("Error while calculating!").toString()
-							: magicalPowerString.append(EnumChatFormatting.GOLD).append(Utils.formatNumberWithDots(magicalPower)).toString());
+							: magicalPowerString
+								.append(EnumChatFormatting.GOLD)
+								.append(Utils.formatNumberWithDots(magicalPower))
+								.toString());
 
 						StringBuilder selectedPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Selected Power: ");
 						String selectedPower = PlayerStats.getSelectedMagicalPower(profile.getProfileInformation(profileId));
@@ -3015,35 +3025,6 @@ public class GuiProfileViewer extends GuiScreen {
 			76
 		);
 		if (skillInfo != null) {
-			float totalSkillLVL = 0;
-			float totalTrueSkillLVL = 0;
-			float totalSlayerLVL = 0;
-			float totalSkillCount = 0;
-			float totalSlayerCount = 0;
-			float totalSlayerXP = 0;
-
-			for (Map.Entry<String, JsonElement> entry : skillInfo.entrySet()) {
-				if (entry.getKey().startsWith("level_skill")) {
-					if (entry.getKey().contains("runecrafting")) continue;
-					if (entry.getKey().contains("carpentry")) continue;
-					if (entry.getKey().contains("catacombs")) continue;
-					if (entry.getKey().contains("social")) continue;
-
-					totalSkillLVL += entry.getValue().getAsFloat();
-					totalTrueSkillLVL += Math.floor(entry.getValue().getAsFloat());
-					totalSkillCount++;
-				} else if (entry.getKey().startsWith("level_slayer")) {
-					totalSlayerLVL += entry.getValue().getAsFloat();
-					totalSlayerCount++;
-				} else if (entry.getKey().startsWith("experience_slayer")) {
-					totalSlayerXP += entry.getValue().getAsFloat();
-				}
-			}
-
-			float avgSkillLVL = totalSkillLVL / totalSkillCount;
-			float avgTrueSkillLVL = totalTrueSkillLVL / totalSkillCount;
-			float avgSlayerLVL = totalSlayerLVL / totalSlayerCount;
-
 			Utils.renderAlignedString(
 				EnumChatFormatting.RED + "AVG Skill Level",
 				EnumChatFormatting.WHITE.toString() + Math.floor(avgSkillLVL * 10) / 10,
@@ -3370,7 +3351,9 @@ public class GuiProfileViewer extends GuiScreen {
 		ProfileViewer.Level levelObjhotm = levelObjhotms.get(profileId);
 		if (levelObjhotm == null) {
 			float hotmXp = Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.experience"), 0);
-			levelObjhotm = ProfileViewer.getLevel(Utils.getElementOrDefault(leveling, "HOTM", new JsonArray()).getAsJsonArray(),
+			levelObjhotm = ProfileViewer.getLevel(Utils
+					.getElementOrDefault(leveling, "HOTM", new JsonArray())
+					.getAsJsonArray(),
 				hotmXp, 7, false
 			);
 			levelObjhotms.put(profileId, levelObjhotm);
@@ -3752,7 +3735,8 @@ public class GuiProfileViewer extends GuiScreen {
 				"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckofcaveStat + "%§7.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format((int) Math.pow(luckofcave + 2, 3.07)) + " Mithril Powder"
+				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format((int) Math.pow(luckofcave + 2, 3.07)) +
+					" Mithril Powder"
 			) : Lists.newArrayList(
 				"Luck of the Cave",
 				"§7Level " + luckofcave + EnumChatFormatting.DARK_GRAY + "/45",
@@ -3947,7 +3931,8 @@ public class GuiProfileViewer extends GuiScreen {
 				EnumChatFormatting.GRAY + "Powder and Gemstone Powder§7.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(powderBuff + 2, 3.2)) + " Gemstone Powder"
+				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(powderBuff + 2, 3.2)) +
+					" Gemstone Powder"
 			) : Lists.newArrayList(
 				"Powder Buff",
 				EnumChatFormatting.GRAY + "Level " + powderBuff + EnumChatFormatting.DARK_GRAY + "/50",
@@ -4009,7 +3994,8 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7experience gain by " + EnumChatFormatting.GREEN + seasonMineStat + "%§7.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format((int) Math.pow(seasonMine + 2, 2.3)) + " Mithril Powder"
+				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format((int) Math.pow(seasonMine + 2, 2.3)) +
+					" Mithril Powder"
 			) : Lists.newArrayList(
 				"Seasoned Mineman",
 				"§7Level " + seasonMine + "§8/100",
@@ -4047,7 +4033,8 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7while in the Crystal Hollows.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(lonesomeMiner + 2, 3.07)) + " Gemstone Powder"
+				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(lonesomeMiner + 2, 3.07)) +
+					" Gemstone Powder"
 			) : Lists.newArrayList(
 				"Lonesome Miner",
 				"§7Level " + lonesomeMiner + EnumChatFormatting.DARK_GRAY + "/45",
@@ -4072,7 +4059,8 @@ public class GuiProfileViewer extends GuiScreen {
 				"§6Speed§7 when mining Gemstones.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(professional + 2, 2.3)) + " Gemstone Powder"
+				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(professional + 2, 2.3)) +
+					" Gemstone Powder"
 			) : Lists.newArrayList(
 				"Professional",
 				"§7Level " + professional + EnumChatFormatting.DARK_GRAY + "/140",
@@ -4095,7 +4083,7 @@ public class GuiProfileViewer extends GuiScreen {
 				"§6Speed§7.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format(Math.pow(miningSpeed2 + 2, 3))+ " Gemstone Powder"
+				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format(Math.pow(miningSpeed2 + 2, 3)) + " Gemstone Powder"
 			) : Lists.newArrayList(
 				"Mining Speed 2",
 				"§7Level " + miningSpeed2 + EnumChatFormatting.DARK_GRAY + "/50",
@@ -4141,7 +4129,8 @@ public class GuiProfileViewer extends GuiScreen {
 				"§6Fortune§7 when mining Gemstone.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format((int) Math.pow(fortunate + 2, 3.05)) + " Mithril Powder"
+				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format((int) Math.pow(fortunate + 2, 3.05)) +
+					" Mithril Powder"
 			) : Lists.newArrayList(
 				"Fortunate",
 				"§7Level " + fortunate + EnumChatFormatting.DARK_GRAY + "/20",
@@ -4164,7 +4153,8 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7find treasure.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(greatExplorer + 2, 4)) + " Gemstone Powder"
+				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(greatExplorer + 2, 4)) +
+					" Gemstone Powder"
 			) : Lists.newArrayList(
 				"Great Explorer",
 				"§7Level " + greatExplorer + EnumChatFormatting.DARK_GRAY + "/20",
@@ -4186,7 +4176,8 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7Grants §a+§a" + miningFortune2Stat + "§7 §6☘ Mining", "§6Fortune§7.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(miningFortune2 + 2, 3.2)) + " Gemstone Powder"
+				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(miningFortune2 + 2, 3.2)) +
+					" Gemstone Powder"
 			) : Lists.newArrayList(
 				"Mining Fortune 2",
 				"§7Level " + miningFortune2 + EnumChatFormatting.DARK_GRAY + "/50",
@@ -4276,7 +4267,8 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7§5Fallen Stars§7.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format((int) Math.pow(crystallized + 2, 2.4)) + " Mithril Powder"
+				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format((int) Math.pow(crystallized + 2, 2.4)) +
+					" Mithril Powder"
 			) : Lists.newArrayList(
 				"Crystallized",
 				"§7Level " + crystallized + EnumChatFormatting.DARK_GRAY + "/30",
@@ -4656,16 +4648,24 @@ public class GuiProfileViewer extends GuiScreen {
 			String locationStr = null;
 			if (profile.getUuid().equals("20934ef9488c465180a78f861586b4cf")) {
 				locationStr = "Ignoring DMs";
-			} else if(profile.getUuid().equals("b876ec32e396476ba1158438d83c67d4")) {
+			} else if (profile.getUuid().equals("b876ec32e396476ba1158438d83c67d4")) {
 				statusStr = EnumChatFormatting.LIGHT_PURPLE + "Long live Potato King";
 				ItemStack potato_crown = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
 					.getItemInformation()
 					.get("POTATO_CROWN"));
 				potato_crown.addEnchantment(Enchantment.unbreaking, 1656638942); // this number may be useful
-				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(new ItemStack(Items.potato), guiLeft + 35, guiTop + 160);
+				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
+					new ItemStack(Items.potato),
+					guiLeft + 35,
+					guiTop + 160
+				);
 				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(potato_crown, guiLeft + 50, guiTop + 162);
-				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(new ItemStack(Items.potato), guiLeft + 63, guiTop + 160);
-			}else{
+				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
+					new ItemStack(Items.potato),
+					guiLeft + 63,
+					guiTop + 160
+				);
+			} else {
 				locationStr = NotEnoughUpdates.INSTANCE.navigation.getNameForAreaModeOrUnknown(location);
 			}
 			if (locationStr != null) {
@@ -4937,6 +4937,79 @@ public class GuiProfileViewer extends GuiScreen {
 				0
 			);
 		}
+
+		if (skillInfo != null) {
+			addSkillAvgValues(skillInfo);
+			LilyWeight lilyWeight = profile.getLilyWeight(profileId);
+			List<Integer> slayerXps = new ArrayList<>();
+			if(Constants.WEIGHT == null) {
+				Utils.showOutdatedRepoNotification();
+				return;
+			}
+			Map<String, Pair<Integer, Integer>> stringPairMap = new HashMap<>();
+
+			for (JsonElement skill: Constants.WEIGHT.SLAYER_NAMES) {
+				if(profileInfo.has("experience_slayer_" + skill.getAsString())) {
+					slayerXps.add(profileInfo.get("experience_slayer_" + skill.getAsString().toLowerCase()).getAsInt());
+					continue;
+				}
+			}
+			for (JsonElement skill: Constants.WEIGHT.SKILL_NAMES) {
+				if (profileInfo.has("experience_skill_" + skill.getAsString().toLowerCase())) {
+					String skillName = skill.getAsString();
+					stringPairMap.put(skillName, Pair.of(
+						skillInfo.get("experience_skill_" + skillName.toLowerCase()).getAsInt(),
+						skillInfo.get("level_skill_" + skillName.toLowerCase()).getAsInt()
+					));
+				}
+			}
+			lilyWeight.calculateWeight("", slayerXps, stringPairMap,
+				skillInfo.get("experience_skill_catacombs").getAsDouble(),
+				skillInfo.get("level_skill_catacombs").getAsInt(), avgSkillLVL );
+			Utils.drawStringCentered(
+				EnumChatFormatting.GREEN + "Lily Weight: " + EnumChatFormatting.GOLD + numberFormat.format(lilyWeight.getTotalWeight().getRaw()),
+				fr,
+				guiLeft + 63,
+				guiTop + 28,
+				true,
+				0
+			);
+		}
+	}
+
+	public void addSkillAvgValues(JsonObject skillInfo) {
+		float totalSkillLVL = 0;
+		float totalTrueSkillLVL = 0;
+		float totalSlayerLVL = 0;
+		float totalSkillCount = 0;
+		float totalSlayerCount = 0;
+		float totalSlayerXP = 0;
+
+		for (Map.Entry<String, JsonElement> entry : skillInfo.entrySet()) {
+			if (entry.getKey().startsWith("level_skill")) {
+				if (entry.getKey().contains("runecrafting")) continue;
+				if (entry.getKey().contains("carpentry")) continue;
+				if (entry.getKey().contains("catacombs")) continue;
+				if (entry.getKey().contains("social")) continue;
+
+				totalSkillLVL += entry.getValue().getAsFloat();
+				totalTrueSkillLVL += Math.floor(entry.getValue().getAsFloat());
+				totalSkillCount++;
+			} else if (entry.getKey().startsWith("level_slayer")) {
+				totalSlayerLVL += entry.getValue().getAsFloat();
+				totalSlayerCount++;
+			} else if (entry.getKey().startsWith("experience_slayer")) {
+				totalSlayerXP += entry.getValue().getAsFloat();
+			}
+		}
+
+		this.totalSkillLVL = totalSkillLVL;
+		this.totalTrueSkillLVL = totalTrueSkillLVL;
+		this.totalSlayerLVL = totalSlayerLVL;
+		this.avgSkillLVL = totalSkillLVL / totalSkillCount;
+		this.avgTrueSkillLVL = totalTrueSkillLVL / totalSkillCount;
+		this.avgSlayerLVL = totalSlayerLVL / totalSlayerCount;
+		this.totalSlayerXP = totalSlayerXP;
 	}
 
 	private void renderGoldBar(float x, float y, float xSize) {

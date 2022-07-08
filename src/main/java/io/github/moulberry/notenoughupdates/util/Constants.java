@@ -30,6 +30,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightConstants;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.lang.reflect.Type;
@@ -70,12 +71,15 @@ public class Constants {
 	public static JsonObject FAIRYSOULS;
 	public static JsonObject REFORGESTONES;
 
+	public static WeightConstants WEIGHT;
+
 	private static final ReentrantLock lock = new ReentrantLock();
 
 	@SubscribeEvent
 	public void reload(RepositoryReloadEvent event) {
 		try {
 			lock.lock();
+
 
 			BONUSES = Utils.getConstant("bonuses", gson);
 			DISABLE = Utils.getConstant("disable", gson);
@@ -88,6 +92,7 @@ public class Constants {
 			ESSENCECOSTS = Utils.getConstant("essencecosts", gson);
 			FAIRYSOULS = Utils.getConstant("fairy_souls", gson);
 			REFORGESTONES = Utils.getConstant("reforgestones", gson);
+			WEIGHT = new WeightConstants(Utils.getConstant("weight", gson));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
