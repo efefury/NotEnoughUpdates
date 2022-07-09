@@ -52,25 +52,25 @@ public class LilyWeight extends Weight {
 
 	// skills pair = Pair<Exp, Level>
 	@Override
-	public LilyWeight calculateWeight(Map<String Integer> slayer, Map<String, Pair<Integer, Integer>> skills, double cataXp, int cataLvl, double skillAvg) {
+	public LilyWeight calculateWeight(Map<String, Integer> slayer, Map<String, Pair<Integer, Integer>> skills, double cataXp, int cataLvl, double skillAvg) {
 		slayerWeight.getWeightStruct().reset();
 		skillsWeight.getWeightStruct().reset();
 		dungeonsWeight.getWeightStruct().reset();
 
 		for (JsonElement jsonElement : Constants.WEIGHT.SLAYER_NAMES) {
 			String slayerName = jsonElement.getAsString().toLowerCase();
-			slayerWeight.getSlayerWeight(slayerName, slayer.get(slayerName));
+			System.out.println(slayerName + ": " + slayerWeight.getSlayerWeight(slayerName, slayer.get(slayerName)));
 		}
 
 		for (JsonElement element : Constants.WEIGHT.SKILL_NAMES) {
 			String skillName = element.getAsString().toLowerCase();
 			Pair<Integer, Integer> value = skills.get(skillName);
-			skillsWeight.getSkillsWeight(skillName, value.getValue(),  value.getKey(), skillAvg);
+			System.out.println(skillName + " " + skillsWeight.getSkillsWeight(skillName, value.getValue(),  value.getKey(), skillAvg));
 		}
 
-		dungeonsWeight.getDungeonWeight(cataXp, cataLvl);
-		getDungeonsWeight().getDungeonCompletionWeight("normal");
-		getDungeonsWeight().getDungeonCompletionWeight("master");
+		System.out.println("Cata: " + dungeonsWeight.getDungeonWeight(cataXp, cataLvl));
+		System.out.println("Normal comp:" + getDungeonsWeight().getDungeonCompletionWeight("normal"));
+		System.out.println("Master comp:" + getDungeonsWeight().getDungeonCompletionWeight("master"));
 
 		return this;
 	}

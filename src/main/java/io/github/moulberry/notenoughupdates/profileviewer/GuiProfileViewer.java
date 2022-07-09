@@ -4946,9 +4946,9 @@ public class GuiProfileViewer extends GuiScreen {
 				return;
 			}
 			
-			Map<String, Integer> slayerXps = new ArrayList<>();
+			Map<String, Integer> slayerXps = new HashMap<>();
 			for (JsonElement slayer: Constants.WEIGHT.SLAYER_NAMES) {
-				String slayerStr = slayer.getAsString().toLowerCase()
+				String slayerStr = slayer.getAsString().toLowerCase();
 				if(skillInfo.has("experience_slayer_" + slayerStr)) {
 					slayerXps.put(slayerStr, skillInfo.get("experience_slayer_" + slayerStr).getAsInt());
 				}

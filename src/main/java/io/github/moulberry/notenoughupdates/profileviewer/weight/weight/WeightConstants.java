@@ -40,7 +40,7 @@ public class WeightConstants {
 	public final JsonArray SKILL_NAMES;
 	public final JsonArray SLAYER_NAMES;
 	public final JsonObject SKILL_FACTORS;
-	public final JsonArray SLAYER_DEPRECATION_SCALING;
+	public final JsonObject SLAYER_DEPRECATION_SCALING;
 	public final JsonObject SKILL_OVERFLOW_MULTIPLIERS;
 	public final JsonObject DUNGEON_COMPLETION_WORTH;
 	public final JsonObject DUNGEON_COMPLETION_BUFFS;
@@ -54,7 +54,7 @@ public class WeightConstants {
 
 		LILY_SKILL_RATIO_WEIGHT = lilyObject.getAsJsonObject("skillRatioWeight");
 		LILY_OVERALL_SKILL_MULTIPLIER = lilyObject.get("skillOverall").getAsDouble();
-		SLAYER_DEPRECATION_SCALING = lilyObject.getAsJsonArray("slayerDeprecationScaling");
+		SLAYER_DEPRECATION_SCALING = lilyObject.getAsJsonObject("slayerDeprecationScaling");
 		SKILL_FACTORS = lilyObject.getAsJsonObject("skillFactors");
 		SKILL_OVERFLOW_MULTIPLIERS = lilyObject.getAsJsonObject("skillOverflowMultipliers");
 		DUNGEON_COMPLETION_WORTH = lilyObject.getAsJsonObject("dungeonCompletionWorth");

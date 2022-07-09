@@ -62,4 +62,8 @@ public class WeightStruct {
 		this.base = 0;
 		this.overflow = 0;
 	}
+
+	public String toString() {
+		System.out.println(base + " + " + overflow)
+	}
 }

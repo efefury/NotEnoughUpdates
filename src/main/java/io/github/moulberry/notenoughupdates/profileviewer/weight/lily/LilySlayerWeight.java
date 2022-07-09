@@ -51,13 +51,13 @@ public class LilySlayerWeight extends SlayerWeight {
 		double effectiveScore = effectiveInt(intScore, scaleFactor) + effectiveDistance;
 		double weight;
 		switch (slayerName) {
-			case "rev":
+			case "zombie":
 				weight = (effectiveScore / 8390.64) + (currentSlayerXp / 1000000.0);
 				break;
-			case "tara":
+			case "spider":
 				weight = (effectiveScore / 7019.57) + ((currentSlayerXp * 1.6) / 1000000);
 				break;
-			case "sven":
+			case "wolf":
 				weight = (effectiveScore / 2982.06) + ((currentSlayerXp * 3.6) / 1000000);
 				break;
 			case "enderman":
