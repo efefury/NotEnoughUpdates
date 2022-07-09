@@ -60,7 +60,6 @@ public class WeightConstants {
 		DUNGEON_COMPLETION_WORTH = lilyObject.getAsJsonObject("dungeonCompletionWorth");
 		DUNGEON_COMPLETION_BUFFS = lilyObject.getAsJsonObject("dungeonCompletionBuffs");
 
-
 		SKILLS_LEVEL_50_XP = weightObject.get("skillMaxXP50").getAsInt();
 		SKILLS_LEVEL_60_XP = weightObject.get("skillMaxXP60").getAsInt();
 		CATACOMBS_LEVEL_50_XP = weightObject.get("dungeonMaxXP").getAsInt();

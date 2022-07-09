@@ -35,7 +35,6 @@ public abstract class Weight {
 		this.slayerWeight = slayerWeight;
 		this.skillsWeight = skillsWeight;
 		this.dungeonsWeight = dungeonsWeight;
-
 	}
 
 	public SkillsWeight getSkillsWeight() {
@@ -58,5 +57,5 @@ public abstract class Weight {
 		return w;
 	}
 
-	public abstract Weight calculateWeight(String exclude, List<Integer> slayer, Map<String, Pair<Integer, Integer>> skills, double cataXp, int cataLvl, double skillAvg);
+	public abstract Weight calculateWeight(Map<String, Integer> slayer, Map<String, Pair<Integer, Integer>> skills, double cataXp, int cataLvl, double skillAvg);
 }

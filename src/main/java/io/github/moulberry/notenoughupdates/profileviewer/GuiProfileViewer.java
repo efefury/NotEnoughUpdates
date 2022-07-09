@@ -4940,32 +4940,36 @@ public class GuiProfileViewer extends GuiScreen {
 
 		if (skillInfo != null) {
 			addSkillAvgValues(skillInfo);
-			LilyWeight lilyWeight = profile.getLilyWeight(profileId);
-			List<Integer> slayerXps = new ArrayList<>();
+			
 			if(Constants.WEIGHT == null) {
 				Utils.showOutdatedRepoNotification();
 				return;
 			}
-			Map<String, Pair<Integer, Integer>> stringPairMap = new HashMap<>();
-
-			for (JsonElement skill: Constants.WEIGHT.SLAYER_NAMES) {
-				if(profileInfo.has("experience_slayer_" + skill.getAsString())) {
-					slayerXps.add(profileInfo.get("experience_slayer_" + skill.getAsString().toLowerCase()).getAsInt());
-					continue;
+			
+			Map<String, Integer> slayerXps = new ArrayList<>();
+			for (JsonElement slayer: Constants.WEIGHT.SLAYER_NAMES) {
+				String slayerStr = slayer.getAsString().toLowerCase()
+				if(skillInfo.has("experience_slayer_" + slayerStr)) {
+					slayerXps.put(slayerStr, skillInfo.get("experience_slayer_" + slayerStr).getAsInt());
 				}
 			}
+
+			Map<String, Pair<Integer, Integer>> skillsMap = new HashMap<>();
 			for (JsonElement skill: Constants.WEIGHT.SKILL_NAMES) {
-				if (profileInfo.has("experience_skill_" + skill.getAsString().toLowerCase())) {
-					String skillName = skill.getAsString();
-					stringPairMap.put(skillName, Pair.of(
-						skillInfo.get("experience_skill_" + skillName.toLowerCase()).getAsInt(),
-						skillInfo.get("level_skill_" + skillName.toLowerCase()).getAsInt()
+				String skillStr = skill.getAsString().toLowerCase();
+				if (skillInfo.has("experience_skill_" + skillStr)) {
+					skillsMap.put(skillStr, Pair.of(
+						skillInfo.get("experience_skill_" + skillStr).getAsInt(),
+						skillInfo.get("level_skill_" + skillStr).getAsInt()
 					));
 				}
 			}
-			lilyWeight.calculateWeight("", slayerXps, stringPairMap,
+
+			LilyWeight lilyWeight = profile.getLilyWeight(profileId);
+			lilyWeight.calculateWeight(slayerXps, skillsMap,
 				skillInfo.get("experience_skill_catacombs").getAsDouble(),
 				skillInfo.get("level_skill_catacombs").getAsInt(), avgSkillLVL );
+
 			Utils.drawStringCentered(
 				EnumChatFormatting.GREEN + "Lily Weight: " + EnumChatFormatting.GOLD + numberFormat.format(lilyWeight.getTotalWeight().getRaw()),
 				fr,

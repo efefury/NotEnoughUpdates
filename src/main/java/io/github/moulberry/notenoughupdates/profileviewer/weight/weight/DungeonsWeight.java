@@ -20,7 +20,6 @@
 package io.github.moulberry.notenoughupdates.profileviewer.weight.weight;
 
 import com.google.gson.JsonObject;
-import io.github.moulberry.notenoughupdates.profileviewer.weight.struct.SkillsStruct;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.struct.WeightStruct;
 
 public abstract class DungeonsWeight {
@@ -36,7 +35,6 @@ public abstract class DungeonsWeight {
 	public WeightStruct getWeightStruct() {
 		return weightStruct;
 	}
-
 
 	public abstract WeightStruct getDungeonWeight(double cataXP, int level);
 }

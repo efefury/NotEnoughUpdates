@@ -21,7 +21,6 @@ package io.github.moulberry.notenoughupdates.profileviewer.weight.lily;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.moulberry.notenoughupdates.profileviewer.weight.struct.SkillsStruct;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.struct.WeightStruct;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.DungeonsWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
@@ -37,13 +36,7 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 	}
 
 	@Override
-	public WeightStruct getWeightStruct() {
-		return super.getWeightStruct();
-	}
-
-	@Override
 	public WeightStruct getDungeonWeight(double cataXP, int level) {
-
 		double extra = 0;
 		double n = 0;
 		if (cataXP < 569809640) {
