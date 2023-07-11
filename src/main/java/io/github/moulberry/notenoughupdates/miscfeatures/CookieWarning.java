@@ -64,7 +64,7 @@ public class CookieWarning {
 		}
 		if (timeLine == null) return;
 
-		int minutes = getMinutesRemaining(timeLine);
+		double minutes = getMinutesRemaining(timeLine);
 		if (minutes < NotEnoughUpdates.INSTANCE.config.notifications.boosterCookieWarningMins && !hasNotified) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
 				"§cBooster Cookie Running Low!",
@@ -76,17 +76,19 @@ public class CookieWarning {
 		}
 	}
 
-	private static int getMinutesRemaining(String timeLine) {
+	public static double getMinutesRemaining(String timeLine) {
 		String clean = timeLine.replaceAll("(§.)", "");
 		clean = clean.replaceAll("(\\d)([smhdy])", "$1 $2");
 		String[] digits = clean.split(" ");
-		int minutes = 0;
+		double minutes = 0;
 		try {
 			for (int i = 0; i < digits.length; i++) {
 				if (i % 2 == 1) continue;
 
 				String number = digits[i];
 				String unit = digits[i + 1];
+
+				System.out.println(unit);
 				long val = Integer.parseInt(number);
 				switch (unit) {
 					case "Years":
@@ -111,7 +113,10 @@ public class CookieWarning {
 					case "m":
 						minutes += val;
 						break;
-				} // ignore seconds
+					case "s":
+						minutes += val / 60d;
+						break;
+				} // DON'T ignore seconds
 			}
 		} catch (NumberFormatException e) {
 			if (!hasErrorMessage) {
@@ -159,7 +164,7 @@ public class CookieWarning {
 
 		String timeLine = getTimeLine();
 		if (hasCookie && timeLine != null) {
-			int minutes = getMinutesRemaining(timeLine);
+			double minutes = getMinutesRemaining(timeLine);
 			cookieEndTime = System.currentTimeMillis() + (long) minutes * 60 * 1000;
 		} else {
 			cookieEndTime = 0;

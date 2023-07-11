@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Custom
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager
+import io.github.moulberry.notenoughupdates.overlays.todo.CustomTodoOverlay
 import io.github.moulberry.notenoughupdates.util.PronounDB
 import io.github.moulberry.notenoughupdates.util.SBInfo
 import io.github.moulberry.notenoughupdates.util.TabListUtils
@@ -112,6 +113,9 @@ class DevTestCommand {
                 val gamemode = SBInfo.getInstance().getGamemodeForProfile(currentProfile)
                 reply("${GOLD}You are on Profile $currentProfile with the mode $gamemode")
             }.withHelp("Display information about your current profile")
+            thenLiteralExecute("opentodo") {
+                NotEnoughUpdates.INSTANCE.openGui = CustomTodoOverlay()
+            }
             thenLiteralExecute("buildflags") {
                 reply("BuildFlags: \n" +
                         BuildFlags.getAllFlags().entries

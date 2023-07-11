@@ -300,14 +300,14 @@ public class RecipeGenerator {
 		);
 	}
 
-	private static final Map<Character, Integer> durationSuffixLengthMap = new HashMap<Character, Integer>() {{
+	public static final Map<Character, Integer> durationSuffixLengthMap = new HashMap<Character, Integer>() {{
 		put('d', 60 * 60 * 24);
 		put('h', 60 * 60);
 		put('m', 60);
 		put('s', 1);
 	}};
 
-	public int parseDuration(String durationString) {
+	public static int parseDuration(String durationString) {
 		String[] parts = durationString.split(" ");
 		int timeInSeconds = 0;
 		for (String part : parts) {

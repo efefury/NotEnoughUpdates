@@ -30,6 +30,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.TooltipTextScrolling;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -990,6 +991,7 @@ public class Utils {
 
 		return itemStack;
 	}
+
 	public static ItemStack createSkull(String displayName, String uuid, String value) {
 		return createSkull(displayName, uuid, value, null);
 	}
@@ -1522,6 +1524,7 @@ public class Utils {
 			Minecraft.getMinecraft().fontRendererObj
 		);
 	}
+
 	public static JsonObject getConstant(String constant, Gson gson) {
 		return getConstant(constant, gson, JsonObject.class);
 	}
@@ -1959,6 +1962,41 @@ public class Utils {
 
 	public static String prettyTime(Duration time) {
 		return prettyTime(time.toMillis());
+	}
+
+	public static String prettyTime(long millis, boolean spaces) {
+		long seconds = millis / 1000 % 60;
+		long minutes = (millis / 1000 / 60) % 60;
+		long hours = (millis / 1000 / 60 / 60) % 24;
+		long days = (millis / 1000 / 60 / 60 / 24);
+
+		String endsIn = "";
+		if (millis < 0) {
+			endsIn += "Ended!";
+		} else if (minutes == 0 && hours == 0 && days == 0) {
+			endsIn += seconds + "s";
+		} else if (hours == 0 && days == 0) {
+			endsIn += minutes + "m" + seconds + "s";
+		} else if (days == 0) {
+			if (hours <= 6) {
+				endsIn += hours + "h" + minutes + "m" + seconds + "s";
+			} else {
+				endsIn += hours + "h";
+			}
+		} else {
+			endsIn += days + "d" + hours + "h";
+		}
+
+		StringBuilder stringBuilder = new StringBuilder(endsIn);
+		for (Character character : RecipeGenerator.durationSuffixLengthMap.keySet()) {
+			if (endsIn.contains(character.toString()) && !endsIn.equals("Ended!")) {
+				int i = endsIn.indexOf(character);
+				if (endsIn.length() > i + 1 && spaces) {
+					stringBuilder.insert(i + 1, " ");
+				}
+			}
+		}
+		return stringBuilder.toString();
 	}
 
 	public static String prettyTime(long millis) {

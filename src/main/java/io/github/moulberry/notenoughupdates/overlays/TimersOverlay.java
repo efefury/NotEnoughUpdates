@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.overlays;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
+import io.github.moulberry.notenoughupdates.overlays.todo.Todo;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -389,7 +390,6 @@ public class TimersOverlay extends TextTabOverlay {
 										break;
 									}
 								}
-								break;
 							}
 						}
 					}
@@ -976,8 +976,40 @@ public class TimersOverlay extends TextTabOverlay {
 			);
 		}
 
+		int todoAmount = 11;
+
+		// always = 100%
+		// kinda soon = 50%
+		// soon = 25%
+		// very soon = 10%
+		// ready = 0%
+
+		for (Todo todo : Todo.getTodos()) {
+			todoAmount++;
+			long l = todo.getLastFinished() + todo.getTime();
+			long millis = l - currentTime;
+			String str = "§aReady!";
+
+			double percentage;
+			if (millis >= 0) {
+				percentage = ((double) (currentTime - todo.getLastFinished()) / todo.getTime()) * 100;
+				str = Utils.prettyTime(millis);
+			} else {
+				percentage = 100;
+			}
+
+			if (percentage >= todo.getDisplayType().getPercentage()) {
+				map.put(
+					todoAmount,
+					todo.getName() + ": " +
+						EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
+						str
+				);
+			}
+		}
+
 		overlayStrings = new ArrayList<>();
-		for (int index : NotEnoughUpdates.INSTANCE.config.miscOverlays.todoText2) {
+		for (int index = 0; index <= todoAmount; index++) {
 			if (map.containsKey(index)) {
 				String text = map.get(index);
 				if (hideBecauseOfBingo(text)) continue;

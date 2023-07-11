@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.autosubscribe.AutoLoad;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
@@ -50,6 +51,7 @@ import io.github.moulberry.notenoughupdates.mixins.AccessorMinecraft;
 import io.github.moulberry.notenoughupdates.oneconfig.IOneConfigCompat;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
+import io.github.moulberry.notenoughupdates.overlays.todo.Todo;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -87,10 +89,12 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @NEUAutoSubscribe
@@ -142,7 +146,8 @@ public class NotEnoughUpdates {
 	//Stolen from Biscut and used for detecting whether in skyblock
 	private static final Set<String> SKYBLOCK_IN_ALL_LANGUAGES =
 		Sets.newHashSet("SKYBLOCK", "\u7A7A\u5C9B\u751F\u5B58", "\u7A7A\u5CF6\u751F\u5B58",
-			"SKIBLOCK"); // april fools language
+			"SKIBLOCK"
+		); // april fools language
 	public static NotEnoughUpdates INSTANCE = null;
 	public static HashMap<String, String> petRarityToColourMap = new HashMap<String, String>() {{
 		put("UNKNOWN", EnumChatFormatting.RED.toString());
@@ -311,6 +316,8 @@ public class NotEnoughUpdates {
 				tmp.delete();
 			}
 		}));
+
+		initTodos();
 	}
 
 	public void saveConfig() {
@@ -494,6 +501,34 @@ public class NotEnoughUpdates {
 			}
 
 			hasSkyblockScoreboard = false;
+		}
+	}
+
+	public void initTodos() {
+		File file = new File("config/notenoughupdates", "todos.json");
+		if(!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		JsonObject object = null;
+		try (
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+				java.nio.file.Files.newInputStream(file.toPath()),
+				StandardCharsets.UTF_8
+			))
+		) {
+			object = gson.fromJson(reader, JsonObject.class);
+		} catch (Exception ignored) {
+		}
+
+		if(object == null) object = new JsonObject();
+		Todo.setObject(object);
+		for (Map.Entry<String, JsonElement> stringJsonElementEntry : object.entrySet()) {
+			Todo.addTodoToList(Todo.fromJson(stringJsonElementEntry.getValue().getAsJsonObject()));
 		}
 	}
 }
